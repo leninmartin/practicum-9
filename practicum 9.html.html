@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neuralnetics — Synaptic Telemetry &amp; Pulse Engine</title>
+  <style>
+    /* 1. Reset & Base Styles */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #050811;
+      color: #f8fafc;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* 2. Sliding Telemetry Ticker Banner */
+    .ticker-track {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(90deg, #0284c7, #7e22ce);
+      color: #ffffff;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .sliding-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 0.98rem;
+      letter-spacing: 0.04em;
+      /* Multimedia Animation Properties */
+      animation-name: slideAcrossWindow;
+      animation-duration: 10s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-direction: normal;
+    }
+
+    .ticker-track:hover .sliding-text {
+      animation-play-state: paused;
+    }
+
+    @keyframes slideAcrossWindow {
+      0% {
+        transform: translateX(100vw);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    /* 3. Main Container */
+    .container {
+      max-width: 1050px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title h1 {
+      font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.03em;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-title p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    /* 4. Interactive UI Components Grid */
+    .ui-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .ui-card {
+      background-color: #0b1120;
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .ui-card:hover {
+      transform: translateY(-4px);
+      border-color: #38bdf8;
+      box-shadow: 0 12px 28px rgba(56, 189, 248, 0.18);
+    }
+
+    .ui-card h2 {
+      font-size: 1.15rem;
+      color: #38bdf8;
+      margin-bottom: 0.25rem;
+    }
+
+    .ui-card p {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    /* 5. Neural Wave Synthesizer Animation */
+    .media-stage {
+      height: 110px;
+      background-color: #050811;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 1rem;
+    }
+
+    .eq-bar {
+      width: 12px;
+      height: 70px;
+      background: linear-gradient(180deg, #a855f7, #38bdf8);
+      border-radius: 6px;
+      transform-origin: bottom;
+      animation: equalizer 1.1s ease-in-out infinite alternate;
+    }
+
+    .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.45s; }
+    .eq-bar:nth-child(4) { animation-delay: 0.15s; }
+    .eq-bar:nth-child(5) { animation-delay: 0.35s; }
+    .eq-bar:nth-child(6) { animation-delay: 0.55s; }
+
+    .media-stage.paused .eq-bar {
+      animation-play-state: paused;
+    }
+
+    @keyframes equalizer {
+      0%   { transform: scaleY(0.2); }
+      100% { transform: scaleY(1); }
+    }
+
+    /* 6. Interactive Buttons (Tactile Hover, Press & Pulse Feedback) */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 1.15rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.04);
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #0284c7, #7e22ce);
+      color: #ffffff;
+      animation: subtlePulse 2.4s infinite;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #0369a1, #6b21a8);
+    }
+
+    .btn-secondary {
+      background-color: #1e293b;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+
+    .btn-secondary:hover {
+      background-color: #334155;
+    }
+
+    @keyframes subtlePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.55); }
+      70%      { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+    }
+
+    /* 7. Cortical Packet Sync Loader */
+    .progress-track {
+      width: 100%;
+      height: 14px;
+      background-color: #050811;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #38bdf8, #a855f7);
+      transform-origin: left;
+      animation: loadCycle 3s ease-in-out infinite normal;
+    }
+
+    @keyframes loadCycle {
+      0%   { transform: scaleX(0); }
+      85%  { transform: scaleX(1); }
+      100% { transform: scaleX(1); }
+    }
+
+    /* 8. Animated BCI Diagnostic Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background-color: rgba(3, 6, 16, 0.85);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-dialog {
+      background: linear-gradient(145deg, #0f172a 0%, #090d16 100%);
+      border: 1px solid #38bdf8;
+      border-radius: 14px;
+      max-width: 420px;
+      width: 100%;
+      padding: 1.75rem;
+      text-align: center;
+      transform: scale(0.88) translateY(12px);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 0 36px rgba(56, 189, 248, 0.25), 0 20px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    .modal-backdrop.active .modal-dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-dialog h3 {
+      font-size: 1.3rem;
+      color: #38bdf8;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-dialog p {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      margin-bottom: 1.25rem;
+    }
+
+    /* 9. Accessibility: Respect Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .sliding-text,
+      .eq-bar,
+      .btn-primary,
+      .progress-fill {
+        animation: none;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sliding Telemetry Marquee Banner -->
+  <div class="ticker-track" aria-label="Neuralnetics Live Telemetry Feed">
+    <span class="sliding-text">
+      NEURALNETICS CORTEX STREAM &bull; Synaptic Latency: 0.42ms &bull; BCI Neural Link Synchronized &bull; Quantum Tensor Bus Active!
+    </span>
+  </div>
+
+  <main class="container">
+    <header class="page-title">
+      <h1>Neuralnetics: Synaptic Pulse Engine</h1>
+      <p>Real-Time Bio-Signal Waveforms, Cortical Packet Sync &amp; Neural Interface Controls</p>
+    </header>
+
+    <section class="ui-grid">
+      <!-- Component 1: EEG Oscillation Synthesizer -->
+      <article class="ui-card">
+        <div>
+          <h2>1. EEG Oscillation Synthesizer</h2>
+          <p>Visualizes multi-band alpha and gamma cortical frequency waves in real time.</p>
+        </div>
+        <div class="media-stage" id="mediaStage" aria-hidden="true">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="toggleMediaBtn">Pause Wave Stream</button>
+        </div>
+      </article>
+
+      <!-- Component 2: Cortical Packet Calibration -->
+      <article class="ui-card">
+        <div>
+          <h2>2. Cortical Packet Calibration</h2>
+          <p>Continuously cycles synaptic weight alignment and resets cleanly at each neuro-epoch.</p>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="Cortical synchronization cycle">
+          <div class="progress-fill"></div>
+        </div>
+        <p style="font-size: 0.8rem; color: #94a3b8;">Zero-latency GPU compositor thread execution.</p>
+      </article>
+
+      <!-- Component 3: Neural Link Handshake & Diagnostic Modal -->
+      <article class="ui-card">
+        <div>
+          <h2>3. Neural Link Handshake</h2>
+          <p>Initiates a closed-loop bi-directional calibration check with the cybernetic core.</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="openModalBtn">Initialize BCI Link</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Animated BCI Diagnostic Modal Overlay -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+      <h3 id="modalTitle">BCI Link Synchronized</h3>
+      <p>
+        Bi-directional cortical handshake verified at 99.98% signal fidelity. All synaptic channels are locked and nominal.
+      </p>
+      <button class="btn btn-primary" id="closeModalBtn">Terminate Session</button>
+    </div>
+  </div>
+
+  <script>
+    const mediaStage = document.getElementById("mediaStage");
+    const toggleMediaBtn = document.getElementById("toggleMediaBtn");
+    const openModalBtn = document.getElementById("openModalBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const modalBackdrop = document.getElementById("modalBackdrop");
+
+    toggleMediaBtn.addEventListener("click", () => {
+      const isPaused = mediaStage.classList.toggle("paused");
+      toggleMediaBtn.textContent = isPaused ? "Resume Wave Stream" : "Pause Wave Stream";
+    });
+
+    openModalBtn.addEventListener("click", () => {
+      modalBackdrop.classList.add("active");
+      closeModalBtn.focus();
+    });
+
+    closeModalBtn.addEventListener("click", () => {
+      modalBackdrop.classList.remove("active");
+      openModalBtn.focus();
+    });
+
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) {
+        modalBackdrop.classList.remove("active");
+        openModalBtn.focus();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalBackdrop.classList.contains("active")) {
+        modalBackdrop.classList.remove("active");
+        openModalBtn.focus();
+      }
+    });
+  </script>
+</body>
+</html>
